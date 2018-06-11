@@ -1,4 +1,4 @@
-FROM aaii/JamesDGX:MOFED401010_tensorflow1.7-gpu
+FROM aaii/jamesdgx:MOFED401010_tensorflow1.7-gpu-stage1
 LABEL maintainer "PengzhiZhu <ldqhyfzpz@qq.com>"
 MAINTAINER PengzhiZhu <ldqhyfzpz@qq.com>
 
