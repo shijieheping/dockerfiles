@@ -112,25 +112,25 @@ ENV TF_CUDA_COMPUTE_CAPABILITIES 3.5,3.7,6.0,6.1
 ENV TF_CUDA_VERSION 9.0
 ENV TF_CUDNN_VERSION 7
 
-RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
-    LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs:${LD_LIBRARY_PATH} \
-    tensorflow/tools/ci_build/builds/configured GPU \
-    bazel build -c opt --config=cuda \
-	--cxxopt="-D_GLIBCXX_USE_CXX11_ABI=0" \
-        tensorflow/tools/pip_package:build_pip_package && \
-    rm /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
-    bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/pip && \
-    pip --no-cache-dir install --upgrade /tmp/pip/tensorflow-*.whl && \
-    rm -rf /tmp/pip && \
-    rm -rf /root/.cache
+#RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
+#    LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs:${LD_LIBRARY_PATH} \
+#    tensorflow/tools/ci_build/builds/configured GPU \
+#    bazel build -c opt --config=cuda \
+#	--cxxopt="-D_GLIBCXX_USE_CXX11_ABI=0" \
+#        tensorflow/tools/pip_package:build_pip_package && \
+#    rm /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
+#    bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/pip && \
+#    pip --no-cache-dir install --upgrade /tmp/pip/tensorflow-*.whl && \
+#    rm -rf /tmp/pip && \
+#    rm -rf /root/.cache
 # Clean up pip wheel and Bazel cache when done.
 
 # Benchmarks
-WORKDIR /benchmarks
-RUN git clone https://github.com/tensorflow/benchmarks.git . && \
-    git reset --hard 4b337c13b1d71c67a9097779a2d92a9e1cc7ba2a && \
-    pip --no-cache-dir install \
-        portpicker 
+#WORKDIR /benchmarks
+#RUN git clone https://github.com/tensorflow/benchmarks.git . && \
+#    git reset --hard 4b337c13b1d71c67a9097779a2d92a9e1cc7ba2a && \
+#    pip --no-cache-dir install \
+#        portpicker 
 
 # For Singularity
 RUN touch /usr/bin/nvidia-smi
