@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
+FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu16.04
 LABEL maintainer "PengzhiZhu <ldqhyfzpz@qq.com>"
 MAINTAINER PengzhiZhu <ldqhyfzpz@qq.com>
 
@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         wget \
         && \
     rm -rf /var/lib/apt/lists/* && \
-    find /usr/local/cuda-9.0/lib64/ -type f -name 'lib*_static.a' -not -name 'libcudart_static.a' -delete && \
+    find /usr/local/cuda-9.2/lib64/ -type f -name 'lib*_static.a' -not -name 'libcudart_static.a' -delete && \
     rm /usr/lib/x86_64-linux-gnu/libcudnn_static_v7.a
 
 RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
@@ -108,8 +108,8 @@ ENV TF_ENABLE_XLA 0
 ENV TF_NEED_GDR 1
 ENV TF_NEED_VERBS 1
 ENV TF_NEED_MPI 0
-ENV TF_CUDA_COMPUTE_CAPABILITIES 3.5,6.0,7.0
-ENV TF_CUDA_VERSION 9.0
+ENV TF_CUDA_COMPUTE_CAPABILITIES 7.0
+ENV TF_CUDA_VERSION 9.2
 ENV TF_CUDNN_VERSION 7
 
 RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \

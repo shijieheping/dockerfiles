@@ -56,6 +56,8 @@ RUN pip --no-cache-dir install \
         scipy \
         sklearn \
         pandas \
+	mock \
+	enum34 \
         && \
     python -m ipykernel.kernelspec
 
@@ -93,7 +95,7 @@ RUN mkdir /bazel && \
 
 # Download and build TensorFlow.
 WORKDIR /tensorflow
-RUN git clone --branch=r1.6 --depth=1 https://github.com/tensorflow/tensorflow.git .
+RUN git clone --branch=r1.9 --depth=1 https://github.com/tensorflow/tensorflow.git .
 
 # Configure the build for our CUDA configuration.
 ENV CI_BUILD_PYTHON python
@@ -108,7 +110,7 @@ ENV TF_ENABLE_XLA 0
 ENV TF_NEED_GDR 1
 ENV TF_NEED_VERBS 1
 ENV TF_NEED_MPI 0
-ENV TF_CUDA_COMPUTE_CAPABILITIES 3.5,6.0,7.0
+ENV TF_CUDA_COMPUTE_CAPABILITIES 7.0
 ENV TF_CUDA_VERSION 9.0
 ENV TF_CUDNN_VERSION 7
 
