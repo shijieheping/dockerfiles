@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu16.04
+FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
 LABEL maintainer "PengzhiZhu <ldqhyfzpz@qq.com>"
 MAINTAINER PengzhiZhu <ldqhyfzpz@qq.com>
 
@@ -45,7 +45,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         wget \
         && \
     rm -rf /var/lib/apt/lists/* && \
-    find /usr/local/cuda-9.2/lib64/ -type f -name 'lib*_static.a' -not -name 'libcudart_static.a' -delete && \
+    find /usr/local/cuda-9.0/lib64/ -type f -name 'lib*_static.a' -not -name 'libcudart_static.a' -delete && \
     rm /usr/lib/x86_64-linux-gnu/libcudnn_static_v7.a
 
 RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
@@ -101,9 +101,9 @@ RUN mkdir /bazel && \
     rm -f /bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
 
 # docker run --network host -ti -p 8080:80 -v /root/httpd:/usr/local/apache2/htdocs httpd
-RUN cd / && wget http://localhost/nccl_2.2.13-1+cuda9.2_x86_64.txz && \
-    tar -xf nccl_2.2.13-1+cuda9.2_x86_64.txz && \
-    rm -f nccl_2.2.13-1+cuda9.2_x86_64.txz
+RUN cd / && wget http://localhost/nccl_2.2.13-1+cuda9.0_x86_64.txz && \
+    tar -xf nccl_2.2.13-1+cuda9.0_x86_64.txz && \
+    rm -f nccl_2.2.13-1+cuda9.0_x86_64.txz
 
 # Download and build TensorFlow.
 WORKDIR /tensorflow
@@ -123,12 +123,12 @@ ENV TF_NEED_GDR 1
 ENV TF_NEED_VERBS 1
 ENV TF_NEED_MPI 0
 ENV TF_CUDA_COMPUTE_CAPABILITIES 3.5,6.0,7.0
-ENV TF_CUDA_VERSION 9.2
+ENV TF_CUDA_VERSION 9.0
 ENV TF_CUDNN_VERSION 7
 ENV TF_NEED_OPENCL_SYCL 0
 ENV TF_CUDA_CLANG 0
 ENV TF_NCCL_VERSION 2
-ENV NCCL_INSTALL_PATH /nccl_2.2.13-1+cuda9.2_x86_64
+ENV NCCL_INSTALL_PATH /nccl_2.2.13-1+cuda9.0_x86_64
 ENV CUDNN_INSTALL_PATH /usr/lib/x86_64-linux-gnu
 ENV CC_OPT_FLAGS '-march=native'
 
@@ -172,6 +172,6 @@ RUN apt purge libnccl-dev libnccl2 -y --no-install-recommends && \
 	PATH=$PATH:"/usr/mpi/gcc/openmpi-3.0.0rc6/bin" \
 	LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs:${LD_LIBRARY_PATH} \
 	HOROVOD_GPU_ALLREDUCE=NCCL \
-	HOROVOD_NCCL_HOME=/nccl_2.2.13-1+cuda9.2_x86_64 \
+	HOROVOD_NCCL_HOME=/nccl_2.2.13-1+cuda9.0_x86_64 \
 	pip install --no-cache-dir horovod
-ENV LD_LIBRARY_PATH /nccl_2.2.13-1+cuda9.2_x86_64/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH /nccl_2.2.13-1+cuda9.0_x86_64/lib:$LD_LIBRARY_PATH
