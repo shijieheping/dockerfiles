@@ -167,3 +167,11 @@ RUN touch /usr/bin/nvidia-smi
 EXPOSE 6006
 # IPython
 EXPOSE 8888
+
+RUN apt purge libnccl-dev libnccl2 -y --no-install-recommends && \
+	PATH=$PATH:"/usr/mpi/gcc/openmpi-2.0.2a1/bin" \
+	LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs:${LD_LIBRARY_PATH} \
+	HOROVOD_GPU_ALLREDUCE=NCCL \
+	HOROVOD_NCCL_HOME=/nccl_2.2.13-1+cuda9.0_x86_64 \
+	pip install --no-cache-dir horovod
+ENV LD_LIBRARY_PATH /nccl_2.2.13-1+cuda9.0_x86_64/lib:$LD_LIBRARY_PATH
