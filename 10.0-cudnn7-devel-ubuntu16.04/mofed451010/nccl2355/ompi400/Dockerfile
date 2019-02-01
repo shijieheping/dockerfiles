@@ -22,8 +22,9 @@ RUN wget http://content.mellanox.com/ofed/MLNX_OFED-$MOFED_VERSION/MLNX_OFED_LIN
         rm -rf *.tgz && \
     rm -rf /var/lib/apt/lists/*
 
-ENV NCCL_VERSION=2.3.7
-# Install NCCL2 v2.3.7-1
+ENV NCCL_VERSION 2.3.5
+
+# Install NCCL2 v2.3.5-5
 RUN apt-get purge -y --allow-change-held-packages \
 	"*nccl*" && \
 	apt-get update && apt-get install -y --no-install-recommends \
@@ -31,7 +32,7 @@ RUN apt-get purge -y --allow-change-held-packages \
 	devscripts && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-	git clone --origin=v$NCCL_VERSION-1 https://github.com/NVIDIA/nccl.git && \
+	git clone --branch=v$NCCL_VERSION-5 https://github.com/NVIDIA/nccl.git && \
 	cd nccl && make pkg.debian.build -j && \
 	dpkg -i build/pkg/deb/libnccl*.deb && \
 	cd .. && \
@@ -43,16 +44,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         gfortran && \
     mkdir /mpi -p && \
     cd /mpi && \
-    git clone --origin=v$OMPI_VERSION --depth=1 https://github.com/open-mpi/ompi.git ./ompi$OMPI_VERSION && \
+    git clone --branch=v$OMPI_VERSION --depth=1 https://github.com/open-mpi/ompi.git ./ompi$OMPI_VERSION && \
     cd /mpi/ompi$OMPI_VERSION && ./autogen.pl && \
-    CC=/usr/bin/gcc CXX=/usr/bin/g++ FC=/usr/bin/gfortran ./configure --with-verbs --with-cuda=/usr/local/cuda-10.0 --prefix=/mpi/ompi4-cuda \
-	 --with-libevent=internal \
-	 --enable-mpi1-compatibility \
-	 --with-slurm \
-	 --with-platform=contrib/platform/mellanox/optimized \
-	 --with-hcoll=/opt/mellanox/hcoll \
-	 --with-knem=/opt/knem-1.1.3.90mlnx1 \
-	 --with-ucx && \
+    CC=/usr/bin/gcc CXX=/usr/bin/g++ FC=/usr/bin/gfortran ./configure --with-verbs --with-cuda=/usr/local/cuda-10.0 --prefix=/mpi/ompi4-cuda && \
     make -j $(nproc) install && \
     cp Makefile config.log /mpi/ompi4-cuda && \
     cd / && rm -fr /mpi/ompi$OMPI_VERSION

@@ -31,7 +31,7 @@ RUN apt-get purge -y --allow-change-held-packages \
 	devscripts && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-	git clone --origin=v$NCCL_VERSION-1 https://github.com/NVIDIA/nccl.git && \
+	git clone --branch=v$NCCL_VERSION-1 https://github.com/NVIDIA/nccl.git && \
 	cd nccl && make pkg.debian.build -j && \
 	dpkg -i build/pkg/deb/libnccl*.deb && \
 	cd .. && \
@@ -43,16 +43,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         gfortran && \
     mkdir /mpi -p && \
     cd /mpi && \
-    git clone --origin=v$OMPI_VERSION --depth=1 https://github.com/open-mpi/ompi.git ./ompi$OMPI_VERSION && \
+    git clone --branch=v$OMPI_VERSION --depth=1 https://github.com/open-mpi/ompi.git ./ompi$OMPI_VERSION && \
     cd /mpi/ompi$OMPI_VERSION && ./autogen.pl && \
-    CC=/usr/bin/gcc CXX=/usr/bin/g++ FC=/usr/bin/gfortran ./configure --with-verbs --with-cuda=/usr/local/cuda-10.0 --prefix=/mpi/ompi4-cuda \
-	 --with-libevent=internal \
-	 --enable-mpi1-compatibility \
-	 --with-slurm \
-	 --with-platform=contrib/platform/mellanox/optimized \
-	 --with-hcoll=/opt/mellanox/hcoll \
-	 --with-knem=/opt/knem-1.1.3.90mlnx1 \
-	 --with-ucx && \
+    CC=/usr/bin/gcc CXX=/usr/bin/g++ FC=/usr/bin/gfortran ./configure --with-verbs --with-cuda=/usr/local/cuda-10.0 --prefix=/mpi/ompi4-cuda && \
     make -j $(nproc) install && \
     cp Makefile config.log /mpi/ompi4-cuda && \
     cd / && rm -fr /mpi/ompi$OMPI_VERSION
@@ -62,6 +55,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         rsh-client \
         ssh && \
     rm -rf /var/lib/apt/lists/*
+
+# Download and install nccl-tests
+RUN mkdir /nccl-tests -p && cd /nccl-tests && \
+    git clone https://github.com/NVIDIA/nccl-tests.git . && \
+    make MPI=1 NCCL_HOME=/usr/lib/x86_64-linux-gnu CUDA_HOME=/usr/local/cuda-10.0 MPI_HOME=/mpi/ompi4-cuda DST_DIR=/ompi4tests/NCCL2 -j $(nproc) && \
+    cd / && rm -fr /nccl-tests
+
+ENV OSU_VERSION=5.5
+# Download and install CUDA osu-micro-benchmarks
+RUN cd /mpi && \
+    wget http://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-$OSU_VERSION.tar.gz && \
+    tar xf osu-micro-benchmarks-$OSU_VERSION.tar.gz && rm osu-micro-benchmarks-$OSU_VERSION.tar.gz -f && \
+    cd osu-micro-benchmarks-$OSU_VERSION && \
+    CC=/mpi/ompi4-cuda/bin/mpicc CXX=/mpi/ompi4-cuda/bin/mpicxx ./configure --prefix=/ompi4tests/osu --enable-cuda --with-cuda=/usr/local/cuda-10.0 && \
+    make -j $(nproc) install && \
+    cd / && rm -fr /mpi/osu-micro-benchmarks-$OSU_VERSION*
 
 # For Singularity
 RUN touch /usr/bin/nvidia-smi

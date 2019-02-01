@@ -33,7 +33,7 @@ RUN apt-get purge -y --allow-change-held-packages \
 	devscripts && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-	git clone --origin=v$NCCL_VERSION-1 https://github.com/NVIDIA/nccl.git && \
+	git clone --branch=v$NCCL_VERSION-1 https://github.com/NVIDIA/nccl.git && \
 	cd nccl && make pkg.debian.build -j && \
 	dpkg -i build/pkg/deb/libnccl*.deb && \
 	cd .. && \

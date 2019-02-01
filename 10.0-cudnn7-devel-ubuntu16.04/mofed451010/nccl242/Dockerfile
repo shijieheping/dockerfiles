@@ -22,6 +22,22 @@ RUN wget http://content.mellanox.com/ofed/MLNX_OFED-$MOFED_VERSION/MLNX_OFED_LIN
         rm -rf *.tgz && \
     rm -rf /var/lib/apt/lists/*
 
+ENV NCCL_VERSION 2.4.2
+
+# Install NCCL2 v2.4.2-1
+RUN apt-get purge -y --allow-change-held-packages \
+	"*nccl*" && \
+	apt-get update && apt-get install -y --no-install-recommends \
+        git \
+	devscripts && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+	git clone --branch=v$NCCL_VERSION-1 https://github.com/NVIDIA/nccl.git && \
+	cd nccl && make pkg.debian.build -j && \
+	dpkg -i build/pkg/deb/libnccl*.deb && \
+	cd .. && \
+	rm -rf nccl 
+
 # For Singularity
 RUN touch /usr/bin/nvidia-smi
 
